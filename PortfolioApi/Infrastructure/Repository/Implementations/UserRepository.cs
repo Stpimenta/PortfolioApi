@@ -32,15 +32,11 @@ public class UserRepository: IUserRepository
         return user.Id;
     }
 
-    public async Task<bool> UpdateUserAsync(User user, int userId)
+    public async Task<int> UpdateUserAsync(User user, int userId)
     {
-        var existing = await _context.Users.FindAsync(userId);
-        if (existing == null) return false;
-
-        existing.Name = user.Name;
-        existing.Email = user.Email;
-
-        return await _context.SaveChangesAsync() > 0;
+        _context.Users.Update(user);
+        await _context.SaveChangesAsync();
+        return user.Id;
     }
 
     public async Task<bool> DeleteUserAsync(int userId)
