@@ -31,6 +31,9 @@ builder.Services.AddScoped<GetAllUsersUseCase>();
 builder.Services.AddScoped<GetUserByIdUseCase>();
 builder.Services.AddScoped<AddUserUseCase>();
 builder.Services.AddScoped<LoginUserUseCase>();
+builder.Services.AddScoped<UpdateUserUseCase>();
+builder.Services.AddScoped<DeleteUserUseCase>();
+
 
 
 //services
