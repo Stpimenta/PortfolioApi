@@ -1,6 +1,7 @@
+
+using AutoMapper;
 using PortfolioApi.Infrastructure.Repository.Interfaces;
 using PortfolioApi.Shared.Exceptions;
-
 namespace PortfolioApi.Application.UseCases.Users;
 
 public class DeleteUserUseCase

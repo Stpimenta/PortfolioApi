@@ -1,6 +1,9 @@
+
 using System.ComponentModel.DataAnnotations;
 
 namespace PortfolioApi.Application.Dtos;
+
+
 
 public class UpdateUserDto
 {
@@ -15,3 +18,5 @@ public class UpdateUserDto
     [RegularExpression(@"^(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\-]).+$", ErrorMessage = "Password must contain at least one special character.")]
     public string? Password { get; set; }  // opcional no update
 }
+
+

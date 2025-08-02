@@ -1,4 +1,5 @@
 using PortfolioApi.Application.Dtos;
+using PortfolioApi.Domain.Entities;
 using PortfolioApi.Infrastructure.Repository.Interfaces;
 using PortfolioApi.Shared.Exceptions;
 
@@ -6,6 +7,7 @@ namespace PortfolioApi.Application.UseCases.Users;
 
 public class UpdateUserUseCase
 {
+
     private readonly IUserRepository _repository;
 
     public UpdateUserUseCase(IUserRepository repository)
