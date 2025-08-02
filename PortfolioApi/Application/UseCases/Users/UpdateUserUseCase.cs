@@ -7,25 +7,27 @@ namespace PortfolioApi.Application.UseCases.Users;
 
 public class UpdateUserUseCase
 {
-    private readonly IUserRepository _userRepository;
 
-    public UpdateUserUseCase(IUserRepository userRepository)
+    private readonly IUserRepository _repository;
+
+    public UpdateUserUseCase(IUserRepository repository)
     {
-        _userRepository = userRepository;
+        _repository = repository;
     }
 
-    public async Task<int> ExecuteAsync(int userId, UpdateUserDto userDto)
+    public async Task<int> ExecuteAsync(int id, UpdateUserDto dto)
     {
-        var existingUser = await _userRepository.GetUserByIdAsync(userId);
+        var existingUser = await _repository.GetUserByIdAsync(id);
         if (existingUser == null)
         {
-            throw new NotFoundException($"User with id {userId} not found.");
+            throw new NotFoundException($"User with id {id} not found.");
         }
-        
-        existingUser.Name = userDto.Name;
-        existingUser.Email = userDto.Email;
-        
-        await _userRepository.UpdateUserAsync(existingUser, userId);
-        return userId;
+
+        existingUser.Name = dto.Name;
+        existingUser.Email = dto.Email;
+        existingUser.Password = dto.Password;
+
+        await _repository.UpdateUserAsync(existingUser, id);
+        return id;
     }
 }

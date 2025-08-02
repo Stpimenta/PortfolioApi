@@ -22,7 +22,11 @@ public class UserRepository: IUserRepository
 
     public async Task<User?> GetUserByIdAsync(int userId)
     {
-        return await _context.Users.FindAsync(userId);
+        
+        return await _context.Users
+            .Include(u => u.Projects)
+            .FirstOrDefaultAsync(u => u.Id == userId);
+            
     }
 
     public async Task<int> AddUserAsync(User user)

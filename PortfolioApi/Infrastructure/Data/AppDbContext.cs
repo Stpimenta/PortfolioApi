@@ -10,9 +10,50 @@ public class AppDbContext : DbContext
     {}
     
     public DbSet<User> Users { get; set; }
+    public DbSet<Role> Roles { get; set; }
+    public DbSet<Project> Projects { get; set; }
+    public DbSet<Technology> Technologies { get; set; }
+    public DbSet<Icons> Icons { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<UserRoleProgress>()
+            .HasKey(urp => new { urp.UserId, urp.RoleId });
+
+        modelBuilder.Entity<UserRoleProgress>()
+            .HasOne(urp => urp.User)
+            .WithMany(u => u.UserRoles) 
+            .HasForeignKey(urp => urp.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<UserRoleProgress>()
+            .HasOne(urp => urp.Role)
+            .WithMany(r => r.UserRoles) 
+            .HasForeignKey(urp => urp.RoleId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<UserTechProgress>()
+            .HasKey(utp => new { utp.UserId, utp.TechId });
+
+        modelBuilder.Entity<UserTechProgress>()
+            .HasOne(utp => utp.User)
+            .WithMany(u => u.UserTechnologies)
+            .HasForeignKey(utp => utp.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<UserTechProgress>()
+            .HasOne(utp => utp.Tech)
+            .WithMany(t => t.UserTechnologies)
+            .HasForeignKey(utp => utp.TechId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        modelBuilder.Entity<Role>()
+            .HasOne<Icons>()       
+            .WithMany(i => i.Roles)
+            .HasForeignKey("IconId")  
+            .OnDelete(DeleteBehavior.SetNull);
+
+
         base.OnModelCreating(modelBuilder);
     }
 }
