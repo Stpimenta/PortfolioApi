@@ -37,5 +37,27 @@ public class MappingProfile : Profile
         CreateMap<Technology, GetTechnologyDto>()
             .ForMember(dest => dest.IconPath, opt => opt.MapFrom(src => src.Icon != null ? src.Icon.Path : null));
 
+        CreateMap<CreateUserRoleProgressDto, UserRoleProgress>();
+        CreateMap<UserRoleProgress, CreateUserRoleProgressDto>();
+        
+        CreateMap<UserRoleProgress, GetUserRoleProgressDto>();
+
+        CreateMap<Role, RoleDto>()
+            .ForMember(dest => dest.Icon, opt => opt.MapFrom(src => src.Icon));
+
+        CreateMap<Icons, IconDto>();
+        
+        CreateMap<UpdateUserRoleProgressDto, UserRoleProgress>();
+        
+        CreateMap<UserTechProgress, GetUserTechnologyProgressDto>()
+            .ForMember(dest => dest.Tech, opt => opt.MapFrom(src => src.Tech));
+
+        CreateMap<Technology, GetTechnologyDto>()
+            .ForMember(dest => dest.IconPath, opt => opt.MapFrom(src => src.Icon != null ? src.Icon.Path : null));
+        
+        CreateMap<CreateUserTechnologyProgressDto, UserTechProgress>();
+        
+        CreateMap<CreateUserTechnologyProgressDto, UserTechProgress>();
+        CreateMap<UpdateUserTechnologyProgressDto, UserTechProgress>();
     }
 }

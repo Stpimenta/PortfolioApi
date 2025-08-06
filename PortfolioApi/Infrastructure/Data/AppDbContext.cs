@@ -14,6 +14,8 @@ public class AppDbContext : DbContext
     public DbSet<Project> Projects { get; set; }
     public DbSet<Technology> Technologies { get; set; }
     public DbSet<Icons> Icons { get; set; }
+    public DbSet<UserRoleProgress> UserRoleProgress { get; set; }
+    public DbSet<UserTechProgress> UserTechProgress { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -30,7 +32,7 @@ public class AppDbContext : DbContext
             .HasOne(urp => urp.Role)
             .WithMany(r => r.UserRoles) 
             .HasForeignKey(urp => urp.RoleId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Cascade); 
 
         modelBuilder.Entity<UserTechProgress>()
             .HasKey(utp => new { utp.UserId, utp.TechId });
@@ -48,9 +50,9 @@ public class AppDbContext : DbContext
             .OnDelete(DeleteBehavior.Cascade);
         
         modelBuilder.Entity<Role>()
-            .HasOne<Icons>()       
-            .WithMany(i => i.Roles)
-            .HasForeignKey("IconId")  
+            .HasOne(r => r.Icon)
+            .WithMany() 
+            .HasForeignKey(r => r.IconId)
             .OnDelete(DeleteBehavior.SetNull);
 
 
