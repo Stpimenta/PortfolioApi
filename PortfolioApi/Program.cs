@@ -15,26 +15,37 @@ using PortfolioApi.Application.UseCases.Roles;
 using PortfolioApi.Application.UseCases.Technologies;
 using PortfolioApi.Application.UseCases.UserRoleProgress;
 using PortfolioApi.Application.UseCases.UserTechnologyProgress;
+using Microsoft.EntityFrameworkCore;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.ListenAnyIP(5000); // HTTP
-    // Opcional: HTTPS
-    // options.ListenAnyIP(5001, listenOptions => listenOptions.UseHttps());
+    options.ListenAnyIP(5000);
+    
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
 
 // Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseInMemoryDatabase("TestDb"));
-builder.Services.AddControllers();
+//database
+builder.Services.AddDbContext<AppDbContext>(
+
+    options =>
+            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+);
 
 //injetando o mappgind dto
 builder.Services.AddAutoMapper(typeof(MappingProfile));
@@ -127,19 +138,24 @@ builder.Services
         };
     });
 
+builder.Services.AddControllers();
 var app = builder.Build();
+
+//migrations
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
 
 //middlewares
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
 
-app.UseHttpsRedirection();
+app.UseSwagger();
+app.UseSwaggerUI();
+
 app.MapControllers();
 
 app.Run();
