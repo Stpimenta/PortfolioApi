@@ -9,9 +9,23 @@ using Microsoft.IdentityModel.Tokens;
 using PortfolioApi.Application.Services;
 using PortfolioApi.WebApi.Middlewares;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using PortfolioApi.Application.UseCases.Icons;
+using PortfolioApi.Application.UseCases.Projects;
+using PortfolioApi.Application.UseCases.Roles;
+using PortfolioApi.Application.UseCases.Technologies;
+using PortfolioApi.Application.UseCases.UserRoleProgress;
+using PortfolioApi.Application.UseCases.UserTechnologyProgress;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(5000); // HTTP
+    // Opcional: HTTPS
+    // options.ListenAnyIP(5001, listenOptions => listenOptions.UseHttps());
+});
+
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -26,13 +40,60 @@ builder.Services.AddControllers();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 //user cases and Repositories
-builder.Services.AddScoped<IUserRepository,UserRepository>();
+// User
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<GetAllUsersUseCase>();
 builder.Services.AddScoped<GetUserByIdUseCase>();
 builder.Services.AddScoped<AddUserUseCase>();
 builder.Services.AddScoped<LoginUserUseCase>();
 builder.Services.AddScoped<UpdateUserUseCase>();
 builder.Services.AddScoped<DeleteUserUseCase>();
+
+// Icons
+builder.Services.AddScoped<IIconRepository, IconRepository>();
+builder.Services.AddScoped<GetAllIconsUseCase>();
+builder.Services.AddScoped<GetIconByIdUseCase>();
+builder.Services.AddScoped<AddIconUseCase>();
+builder.Services.AddScoped<UpdateIconUseCase>();
+builder.Services.AddScoped<DeleteIconUseCase>();
+
+// Technology
+builder.Services.AddScoped<ITechnologyRepository, TechnologyRepository>();
+builder.Services.AddScoped<GetAllTechnologiesUseCase>();
+builder.Services.AddScoped<GetTechnologyByIdUseCase>();
+builder.Services.AddScoped<AddTechnologyUseCase>();
+builder.Services.AddScoped<UpdateTechnologyUseCase>();
+builder.Services.AddScoped<DeleteTechnologyUseCase>();
+
+// Project
+builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+builder.Services.AddScoped<GetAllProjectsUseCase>();
+builder.Services.AddScoped<GetProjectByIdUseCase>();
+builder.Services.AddScoped<AddProjectUseCase>();
+builder.Services.AddScoped<UpdateProjectUseCase>();
+builder.Services.AddScoped<DeleteProjectUseCase>();
+
+// Roles
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<GetAllRolesUseCase>();
+builder.Services.AddScoped<GetRoleByIdUseCase>();
+builder.Services.AddScoped<CreateRoleUseCase>();
+builder.Services.AddScoped<UpdateRoleUseCase>();
+builder.Services.AddScoped<DeleteRoleUseCase>();
+
+// UserRoleProgress
+builder.Services.AddScoped<IUserRoleProgressRepository, UserRoleProgressRepository>();
+builder.Services.AddScoped<AddUserRoleProgressUseCase>();
+builder.Services.AddScoped<UpdateUserRoleProgressUseCase>();
+builder.Services.AddScoped<DeleteUserRoleProgressUseCase>();
+builder.Services.AddScoped<GetUserRoleProgressByUserUseCase>();
+
+// UserTechnologyProgress
+builder.Services.AddScoped<IUserTechnologyRepository, UserTechnologyRepository>();
+builder.Services.AddScoped<AddUserTechnologyUseCase>();
+builder.Services.AddScoped<UpdateUserTechnologyUseCase>();
+builder.Services.AddScoped<DeleteUserTechnologyUseCase>();
+builder.Services.AddScoped<GetUserTechnologyUseCase>();
 
 
 
