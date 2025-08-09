@@ -1,4 +1,5 @@
 using System.Text;
+using Amazon.S3;
 using Microsoft.EntityFrameworkCore;
 using PortfolioApi.Application.UseCases.Users;
 using PortfolioApi.Infrastructure.Data;
@@ -47,6 +48,10 @@ builder.Services.AddDbContext<AppDbContext>(
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
+//
+// builder.Services.AddDbContext<AppDbContext>(options =>
+//     options.UseInMemoryDatabase("DevDb"));
+
 //injetando o mappgind dto
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
@@ -83,6 +88,7 @@ builder.Services.AddScoped<GetProjectByIdUseCase>();
 builder.Services.AddScoped<AddProjectUseCase>();
 builder.Services.AddScoped<UpdateProjectUseCase>();
 builder.Services.AddScoped<DeleteProjectUseCase>();
+builder.Services.AddScoped<GetProjectByIdUserUseCase>();
 
 // Roles
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
@@ -111,6 +117,7 @@ builder.Services.AddScoped<GetUserTechnologyUseCase>();
 //services
 builder.Services.AddScoped<IPasswordService, PasswordService>();
 builder.Services.AddScoped<JwtService>();
+builder.Services.AddScoped<AmazonS3Service>();
 
 //jwt
 var jwtSettings = builder.Configuration.GetSection("Jwt");
@@ -138,15 +145,33 @@ builder.Services
         };
     });
 
+//aws
+builder.Services.AddSingleton<Amazon.S3.IAmazonS3>(sp =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+
+    var accessKey = config["AWS:AccessKey"];
+    var secretKey = config["AWS:SecretKey"];
+    var regionName = config["AWS:Region"];
+
+    var credentials = new Amazon.Runtime.BasicAWSCredentials(accessKey, secretKey);
+    var region = Amazon.RegionEndpoint.GetBySystemName(regionName);
+
+    return new AmazonS3Client(credentials, region);
+} );
+
+
+
 builder.Services.AddControllers();
 var app = builder.Build();
+app.UseCors("AllowAll");
 
 //migrations
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate();
-}
+// using (var scope = app.Services.CreateScope())
+// {
+//     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+//     db.Database.Migrate();
+// }
 
 //middlewares
 app.UseMiddleware<ExceptionHandlingMiddleware>();

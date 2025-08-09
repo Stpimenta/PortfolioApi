@@ -1,5 +1,7 @@
+using Amazon.S3;
 using AutoMapper;
 using PortfolioApi.Application.Dtos;
+using PortfolioApi.Application.Services;
 using PortfolioApi.Infrastructure.Repository.Implementations;
 using PortfolioApi.Infrastructure.Repository.Interfaces;
 using PortfolioApi.Shared.Exceptions;
@@ -11,49 +13,83 @@ public class UpdateProjectUseCase
     private readonly IProjectRepository _repository;
     private readonly ITechnologyRepository _repositoryTechnology;
     private readonly IUserRepository _repositoryUser;
-    
+    private readonly AmazonS3Service _amazonS3Service;
     private readonly IMapper _mapper;
 
-    public UpdateProjectUseCase(IProjectRepository repository, IMapper mapper, ITechnologyRepository repositoryTechnology, IUserRepository repositoryUser)
+    public UpdateProjectUseCase(IProjectRepository repository, IMapper mapper,
+        ITechnologyRepository repositoryTechnology, IUserRepository repositoryUser,  AmazonS3Service amazonS3Servicet)
     {
         _repository = repository;
         _mapper = mapper;
         _repositoryTechnology = repositoryTechnology;
         _repositoryUser = repositoryUser;
+        _amazonS3Service = amazonS3Servicet;
+        
     }
 
-    public async Task<int> ExecuteAsync(int id, UpdateProjectDto dto)
+    public async Task ExecuteAsync(int id, UpdateProjectDto dto)
     {
-        var existing = await _repository.GetByIdAsync(id);
-        if (existing == null)
-            throw new NotFoundException($"Project with id {id} not found.");
+        
+        var project = await _repository.GetByIdAsync(id);
+        
+        if (project is null)
+            throw new NotFoundException($"project with id:{id} not found");
+        
+        var user = await _repositoryUser.GetUserByIdAsync(dto.UserId);
+        
+        if(user is null)
+            throw new NotFoundException($"User with id:{dto.UserId} not found");
+        
+        
+        _mapper.Map(dto,project);
+        
+        
+        var technologies = await _repositoryTechnology.GetByTechIdsAsync(dto.TechnologyIds);
 
-    
-        var techs = await _repositoryTechnology.GetAllAsync();
-        var validTechs = techs
-            .Where(t => dto.TechnologyIds.Contains(t.Id))
-            .ToList();
-
-        var missingTechIds = dto.TechnologyIds.Except(validTechs.Select(t => t.Id)).ToList();
-        if (missingTechIds.Any())
-            throw new NotFoundException($"Technologies with IDs {string.Join(", ", missingTechIds)} not found.");
-
-
-        var checkUser = await _repositoryUser.GetUserByIdAsync(dto.UserId);
-        if (checkUser == null)
-            throw new NotFoundException($"User with ID {dto.UserId} not found.");
-
-  
-        _mapper.Map(dto, existing);
-
-
-        existing.Technologies.Clear();
-        foreach (var tech in validTechs)
+        if (dto.TechnologyIds.Count != technologies.Count())
         {
-            existing.Technologies.Add(tech);
+            var notFoudIds = dto.TechnologyIds
+                .Except(technologies.Select(t => t.Id))
+                .ToList();
+            
+            throw new NotFoundException($"technologies with Ids {string.Join(", ",notFoudIds)} not found");
         }
         
-        await _repository.UpdateAsync(existing);
-        return existing.Id;
+           
+        var toRemove = project.Technologies.Where(t => !dto.TechnologyIds.Contains(t.Id)).ToList();
+        foreach (var tech in toRemove)
+        {
+            project.Technologies.Remove(tech);
+        }
+        
+        var toAdd = technologies.Where (t => project.Technologies.All(pt => pt.Id != t.Id)).ToList();
+        
+        foreach (var tech in toAdd )
+        {
+            project.Technologies.Add(tech);
+        }
+
+
+        if (dto.Icon is not null && dto.Icon.Length > 0)
+        {
+            var extension = Path.GetExtension(dto.Icon.FileName).ToLowerInvariant();
+            if (extension != ".png")
+                throw new BusinessException("invalid file extension, only png is allowed.");
+            
+            string keyName = $"icons/project/{Guid.NewGuid()}{extension}";
+            
+            var iconId = await _amazonS3Service.UploadFile(dto.Icon.OpenReadStream(), keyName);
+            
+            
+            if (project.Icon is not null)
+            {
+                await _amazonS3Service.DeleteFileAsync(project.Icon);
+            }
+            
+            project.Icon = iconId;
+        }
+        
+        await _repository.UpdateAsync(project);
+        
     }
 }

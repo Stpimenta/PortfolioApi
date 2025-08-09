@@ -44,16 +44,16 @@ public class IconsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<int>> Post([FromBody] CreateIconDto iconDto)
+    public async Task<ActionResult<int>> Post([FromForm] CreateIconDto dto)
     {
-        var iconId = await _createIconUseCase.ExecuteAsync(iconDto);
+        var iconId = await _createIconUseCase.ExecuteAsync(dto);
         return CreatedAtAction(nameof(GetById), new { id = iconId }, iconId);
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<int>> Put(int id, [FromBody] UpdateIconDto iconDto)
+    public async Task<ActionResult<int>> Put(int id, [FromForm] UpdateIconDto dto)
     {
-        var iconId = await _updateIconUseCase.ExecuteAsync(id, iconDto);
+        var iconId = await _updateIconUseCase.ExecuteAsync(id, dto);
         return Ok(iconId);
     }
 

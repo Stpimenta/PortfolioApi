@@ -28,9 +28,7 @@ public class GetUserTechnologyUseCase
             throw new NotFoundException("User not found");
         
         var progresses = await _repository.GetByUserAsync(userId);
-        if (!progresses.Any())
-            throw new NotFoundException("No technology progress found for user.");
-
+        
         return _mapper.Map<IEnumerable<GetUserTechnologyProgressDto>>(progresses);
     }
 }

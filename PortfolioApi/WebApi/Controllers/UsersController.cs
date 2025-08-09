@@ -27,7 +27,7 @@ public class UsersController : ControllerBase
     }
     
     [HttpGet("GetAll")]
-    public async Task<ActionResult<IEnumerable<User>>> GetAll()
+    public async Task<ActionResult<IEnumerable<GetUserDto>>> GetAll()
     {
         var users = await _getAllUsersUseCase.ExecuteAsync();
         return Ok(users);

@@ -50,4 +50,11 @@ public class TechnologyRepository : ITechnologyRepository
         _context.Technologies.Remove(tech);
         return await _context.SaveChangesAsync() > 0;
     }
+
+    public async Task<IEnumerable<Technology>> GetByTechIdsAsync(IEnumerable<int> techsId)
+    {
+       return await  _context.Technologies
+            .Where(t => techsId.Contains(t.Id))
+            .ToListAsync();
+    }
 }

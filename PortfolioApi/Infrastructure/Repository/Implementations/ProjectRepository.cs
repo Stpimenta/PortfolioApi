@@ -16,25 +16,51 @@ public class ProjectRepository : IProjectRepository
 
     public async Task<IEnumerable<Project>> GetAllAsync()
     {
-        return await _context.Projects.ToListAsync();
+        
+        var teste = await _context.Projects
+            .Include(p => p.Technologies)
+                .ThenInclude(t => t.Icon)
+            .Include(p => p.User)
+            .AsNoTracking()
+            .ToListAsync();
+
+        return teste;
     }
 
     public async Task<Project?> GetByIdAsync(int projectId)
     {
-        return await _context.Projects.FirstOrDefaultAsync(p => p.Id == projectId);
+        var project = await _context.Projects
+            .Include(p => p.Technologies)
+                .ThenInclude(t => t.Icon)
+            .Include(p => p.User)
+            .FirstOrDefaultAsync(p => p.Id == projectId);
+
+        return project;
     }
     public async Task<int> AddAsync(Project project)
     {
+        foreach (var tech in project.Technologies)
+        {
+            tech.Icon = null; 
+            _context.Attach(tech);
+        }
+        
+        foreach (var tech in project.Technologies)
+        {
+            tech.Icon = null; 
+            _context.Attach(tech);
+        }
+
         _context.Projects.Add(project);
         await _context.SaveChangesAsync();
         return project.Id;
     }
 
-    public async Task<int> UpdateAsync(Project project)
+    public  async Task UpdateAsync(Project project)
     {
-        _context.Projects.Update(project);
-        await _context.SaveChangesAsync();
-        return project.Id;
+         _context.Update(project);
+         await _context.SaveChangesAsync();
+         
     }
 
     public async Task<bool> DeleteAsync(int projectId)
@@ -45,4 +71,30 @@ public class ProjectRepository : IProjectRepository
         _context.Projects.Remove(project);
         return await _context.SaveChangesAsync() > 0;
     }
+
+    public async Task<IEnumerable<Project>> GetByUserIdAsync(int userId)
+    {
+        var projects = await _context.Projects
+            .Where(p => p.UserId == userId)
+            .Include(p => p.Technologies)
+                .ThenInclude(t => t.Icon)
+            .Include(p => p.User)
+            .ToListAsync();
+        
+        return projects;
+    }
+
+    public async Task RemoveAllTechnologiesFromProject(int projectId)
+    {
+        var project = await _context.Projects
+            .Include(p => p.Technologies)
+            .FirstOrDefaultAsync(p => p.Id == projectId);
+
+        if (project != null)
+        {
+            project.Technologies.Clear();
+            await _context.SaveChangesAsync();
+        }
+    }
+
 }

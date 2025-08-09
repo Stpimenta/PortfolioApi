@@ -6,15 +6,16 @@ public class CreateProjectDto
 {
     [Required]
     [MaxLength(100)]
-    public string Name { get; set; } = null!;
+    public string? Name { get; set; } 
     
+    [MaxLength(2000)]
     public string? Description { get; set; }
     
     public string? Download { get; set; }
     
     public string? Git { get; set; }
     
-    public string? Icon { get; set; }
+    public IFormFile? Icon { get; set; }
 
     [Required]
     public int UserId { get; set; }
