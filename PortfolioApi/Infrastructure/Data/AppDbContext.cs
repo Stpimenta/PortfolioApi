@@ -54,7 +54,16 @@ public class AppDbContext : DbContext
             .WithMany() 
             .HasForeignKey(r => r.IconId)
             .OnDelete(DeleteBehavior.SetNull);
+        
+        modelBuilder.Entity<Project>()
+            .HasMany(p => p.Technologies)
+            .WithMany(t => t.Projects);
 
+        modelBuilder.Entity<Technology>()
+            .HasOne(t => t.Icon)
+            .WithMany(i => i.Technologies)
+            .OnDelete(DeleteBehavior.SetNull);
+            
 
         base.OnModelCreating(modelBuilder);
     }

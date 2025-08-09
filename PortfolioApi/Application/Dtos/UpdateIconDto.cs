@@ -5,8 +5,7 @@ namespace PortfolioApi.Application.Dtos;
 public class UpdateIconDto
 {
     [Required]
-    public string Name { get; set; } = null!;
+    public string? Name { get; set; } 
 
-    [Required]
-    public string Path { get; set; } = null!;
+    public IFormFile? Icon { get; set; } 
 }

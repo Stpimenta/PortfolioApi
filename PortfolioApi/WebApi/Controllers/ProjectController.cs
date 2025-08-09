@@ -14,26 +14,36 @@ public class ProjectController : ControllerBase
     private readonly AddProjectUseCase _createProjectUseCase;
     private readonly UpdateProjectUseCase _updateProjectUseCase;
     private readonly DeleteProjectUseCase _deleteProjectUseCase;
+    private readonly GetProjectByIdUserUseCase _getProjectByIdUserUseCase;
 
     public ProjectController(
         GetAllProjectsUseCase getAllProjectsUseCase,
         GetProjectByIdUseCase getProjectByIdUseCase,
         AddProjectUseCase createProjectUseCase,
         UpdateProjectUseCase updateProjectUseCase,
-        DeleteProjectUseCase deleteProjectUseCase)
+        DeleteProjectUseCase deleteProjectUseCase,
+        GetProjectByIdUserUseCase getProjectByIdUserUseCase)
     {
         _getAllProjectsUseCase = getAllProjectsUseCase;
         _getProjectByIdUseCase = getProjectByIdUseCase;
         _createProjectUseCase = createProjectUseCase;
         _updateProjectUseCase = updateProjectUseCase;
         _deleteProjectUseCase = deleteProjectUseCase;
+        _getProjectByIdUserUseCase = getProjectByIdUserUseCase;
     }
 
 
     [HttpGet("GetAll")]
-    public async Task<ActionResult<IEnumerable<Project>>> GetAll()
+    public async Task<ActionResult<IEnumerable<GetProjectDto>>> GetAll()
     {
         var projects = await _getAllProjectsUseCase.ExecuteAsync();
+        return Ok(projects);
+    }
+    
+    [HttpGet("GetByUserId/{userId}")]
+    public async Task<ActionResult<IEnumerable<GetProjectDto>>> GetByUserId(int  userId)
+    {
+        var projects = await _getProjectByIdUserUseCase.ExecuteAsync(userId);
         return Ok(projects);
     }
 
@@ -46,14 +56,14 @@ public class ProjectController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<int>> Create([FromBody] CreateProjectDto dto)
+    public async Task<ActionResult<int>> Create( [FromForm] CreateProjectDto dto)
     {
         var id = await _createProjectUseCase.ExecuteAsync(dto);
         return CreatedAtAction(nameof(GetById), new { id }, id);
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult> Update(int id, [FromBody] UpdateProjectDto dto)
+    public async Task<ActionResult> Update(int id, [FromForm] UpdateProjectDto dto)
     {
         await _updateProjectUseCase.ExecuteAsync(id, dto);
         return NoContent();

@@ -1,4 +1,5 @@
 using PortfolioApi.Application.Dtos;
+using PortfolioApi.Application.Services;
 using PortfolioApi.Infrastructure.Repository.Interfaces;
 using PortfolioApi.Shared.Exceptions;
 
@@ -7,10 +8,13 @@ namespace PortfolioApi.Application.UseCases.Icons;
 public class UpdateIconUseCase
 {
     private readonly IIconRepository _iconRepository;
+    private readonly AmazonS3Service _amazonS3Service;
 
-    public UpdateIconUseCase(IIconRepository iconRepository)
+    public UpdateIconUseCase(IIconRepository iconRepository,  AmazonS3Service amazonS3)
     {
         _iconRepository = iconRepository;
+        _amazonS3Service = amazonS3;
+        
     }
 
     public async Task<int> ExecuteAsync(int iconId, UpdateIconDto iconDto)
@@ -21,8 +25,22 @@ public class UpdateIconUseCase
             throw new NotFoundException($"Icon with id {iconId} not found.");
         }
         
+
+        if (iconDto.Icon is not null && iconDto.Icon.Length > 0)
+        {
+            var extension = Path.GetExtension(iconDto.Icon.FileName).ToLowerInvariant();
+            if(extension != ".png")
+                throw new BusinessException("invalid file extension, only png is allowed.");
+
+            string keyName = $"icons/public/{Guid.NewGuid()}{extension}";
+            var url = await _amazonS3Service.UploadFile(iconDto.Icon.OpenReadStream(), keyName);
+
+            await _amazonS3Service.DeleteFileAsync(existingIcon.Path!);
+            existingIcon.Path = url;
+        }
+        
         existingIcon.Name = iconDto.Name;
-        existingIcon.Path = iconDto.Path;
+        
         
         await _iconRepository.UpdateIconAsync(existingIcon);
         return iconId;

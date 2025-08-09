@@ -12,7 +12,10 @@ public class MappingProfile : Profile
         CreateMap<CreateRoleDto, Role>();
         CreateMap<UpdateTechnologyDto, Technology>();
         CreateMap<CreateProjectDto, Project>();
-        CreateMap<UpdateProjectDto, Project>();
+        CreateMap<UpdateProjectDto, Project>()
+            .ForMember(dest => dest.Technologies, opt => opt.Ignore())
+            .ForMember(dest => dest.Icon, opt => opt.Ignore());
+        
         
         CreateMap<User, UserWithProjectNamesDto>()
             .ForMember(dest => dest.ProjectNames, opt =>
@@ -59,5 +62,17 @@ public class MappingProfile : Profile
         
         CreateMap<CreateUserTechnologyProgressDto, UserTechProgress>();
         CreateMap<UpdateUserTechnologyProgressDto, UserTechProgress>();
+        
+        CreateMap<Icons, IconDto>();
+
+        CreateMap<Technology, TechnologyDto>();
+
+        CreateMap<Project, GetProjectDto>()
+            .ForMember(dest => dest.Technologies, opt => opt.MapFrom(src => src.Technologies));
+        
+        CreateMap<Project, GetProjectDto>();
+        CreateMap<User, GetUserDto>();
+        
+        
     }
 }

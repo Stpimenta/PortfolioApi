@@ -26,8 +26,6 @@ public class GetUserRoleProgressByUserUseCase
             throw new NotFoundException("User not found");
         
         var progresses = await _repository.getByUserAsync(userId);
-        if (!progresses.Any())
-            throw new NotFoundException("No progress found for user.");
 
         return _mapper.Map<IEnumerable<GetUserRoleProgressDto>>(progresses);
     }

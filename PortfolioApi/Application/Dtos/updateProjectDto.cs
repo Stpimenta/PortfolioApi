@@ -11,7 +11,7 @@ public class UpdateProjectDto
     public string? Description { get; set; }
     public string? Download { get; set; }
     public string? Git { get; set; }
-    public string? Icon { get; set; }
+    public IFormFile? Icon { get; set; }
 
     [Required]
     public int UserId { get; set; }
