@@ -6,17 +6,23 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        CreateMap<CreateUserDto, User>();
+        CreateMap<CreateUserDto, User>()
+            .ForMember(dest=> dest.ConfigUrl, opt => opt.Ignore());
         CreateMap<CreateIconDto, Icons>();
         CreateMap<CreateTechnologyDto, Technology>();
         CreateMap<CreateRoleDto, Role>();
-        CreateMap<UpdateTechnologyDto, Technology>();
-        CreateMap<CreateProjectDto, Project>();
+        CreateMap<CreateProjectDto, Project>()
+            .ForMember(dest=> dest.ConfigUrl, opt => opt.Ignore())
+            .ForMember(dest => dest.Images, opt => opt.Ignore());
         CreateMap<UpdateProjectDto, Project>()
             .ForMember(dest => dest.Technologies, opt => opt.Ignore())
-            .ForMember(dest => dest.Icon, opt => opt.Ignore());
+            .ForMember(dest => dest.Icon, opt => opt.Ignore())
+            .ForMember(dest=> dest.ConfigUrl, opt => opt.Ignore());
+
+        CreateMap<UpdateUserDto, User>()
+            .ForMember(dest=> dest.ConfigUrl, opt => opt.Ignore());
         
-        
+        CreateMap<UpdateTechnologyDto, Technology>();
         CreateMap<User, UserWithProjectNamesDto>()
             .ForMember(dest => dest.ProjectNames, opt =>
                 opt.MapFrom(src => src.Projects != null
@@ -40,7 +46,8 @@ public class MappingProfile : Profile
         CreateMap<Technology, GetTechnologyDto>()
             .ForMember(dest => dest.IconPath, opt => opt.MapFrom(src => src.Icon != null ? src.Icon.Path : null));
 
-        CreateMap<CreateUserRoleProgressDto, UserRoleProgress>();
+        CreateMap<CreateUserRoleProgressDto, UserRoleProgress>()
+            .ForMember(dest => dest.Projects, opt => opt.Ignore());
         CreateMap<UserRoleProgress, CreateUserRoleProgressDto>();
         
         CreateMap<UserRoleProgress, GetUserRoleProgressDto>();

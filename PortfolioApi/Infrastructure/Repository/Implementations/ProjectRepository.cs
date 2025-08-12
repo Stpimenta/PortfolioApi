@@ -84,6 +84,12 @@ public class ProjectRepository : IProjectRepository
         return projects;
     }
 
+    public async Task<List<Project>> GetProjectsByUserIdAndProjectIdsAsync(int userId, List<int> projectIds)
+    {
+        return await _context.Projects.Where(p => p.UserId == userId && projectIds.Contains(p.Id))
+            .ToListAsync();
+    }
+
     public async Task RemoveAllTechnologiesFromProject(int projectId)
     {
         var project = await _context.Projects

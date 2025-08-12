@@ -17,18 +17,20 @@ public class UserRoleProgressRepository:IUserRoleProgressRepository
     public async Task<IEnumerable<UserRoleProgress>> getByUserAsync(int userId)
     {
         return await _context.UserRoleProgress
+            .Where(urp => urp.UserId == userId)
             .Include(urp => urp.Role)
                 .ThenInclude(r => r.Icon)
-            .Where(urp => urp.UserId == userId)
+            .Include(urp => urp.Projects)
             .AsNoTracking()
             .ToListAsync();
     }
 
-    public async Task<UserRoleProgress> getAsync(int userId, int roleId)
+    public async Task<UserRoleProgress?> GetAsync(int userId, int roleId)
     {
         return await _context.UserRoleProgress
             .Include(urp => urp.Role)
-                .ThenInclude(r => r.Icon)
+            .ThenInclude(r => r.Icon)
+            .Include(urp => urp.Projects)
             .FirstOrDefaultAsync(urp => urp.UserId == userId && urp.RoleId == roleId);
     }
 

@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace PortfolioApi.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class initialmigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -82,7 +82,8 @@ namespace PortfolioApi.Migrations
                         name: "FK_Technologies_Icons_IconId",
                         column: x => x.IconId,
                         principalTable: "Icons",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -207,6 +208,31 @@ namespace PortfolioApi.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "ProjectUserRoleProgress",
+                columns: table => new
+                {
+                    ProjectsId = table.Column<int>(type: "integer", nullable: false),
+                    UserRoleProgressesUserId = table.Column<int>(type: "integer", nullable: false),
+                    UserRoleProgressesRoleId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectUserRoleProgress", x => new { x.ProjectsId, x.UserRoleProgressesUserId, x.UserRoleProgressesRoleId });
+                    table.ForeignKey(
+                        name: "FK_ProjectUserRoleProgress_Projects_ProjectsId",
+                        column: x => x.ProjectsId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProjectUserRoleProgress_UserRoleProgress_UserRoleProgresses~",
+                        columns: x => new { x.UserRoleProgressesUserId, x.UserRoleProgressesRoleId },
+                        principalTable: "UserRoleProgress",
+                        principalColumns: new[] { "UserId", "RoleId" },
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Projects_UserId",
                 table: "Projects",
@@ -216,6 +242,11 @@ namespace PortfolioApi.Migrations
                 name: "IX_ProjectTechnology_TechnologiesId",
                 table: "ProjectTechnology",
                 column: "TechnologiesId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectUserRoleProgress_UserRoleProgressesUserId_UserRolePr~",
+                table: "ProjectUserRoleProgress",
+                columns: new[] { "UserRoleProgressesUserId", "UserRoleProgressesRoleId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Roles_IconId",
@@ -255,10 +286,10 @@ namespace PortfolioApi.Migrations
                 name: "ProjectTechnology");
 
             migrationBuilder.DropTable(
-                name: "RoleTechnology");
+                name: "ProjectUserRoleProgress");
 
             migrationBuilder.DropTable(
-                name: "UserRoleProgress");
+                name: "RoleTechnology");
 
             migrationBuilder.DropTable(
                 name: "UserTechProgress");
@@ -267,10 +298,13 @@ namespace PortfolioApi.Migrations
                 name: "Projects");
 
             migrationBuilder.DropTable(
-                name: "Roles");
+                name: "UserRoleProgress");
 
             migrationBuilder.DropTable(
                 name: "Technologies");
+
+            migrationBuilder.DropTable(
+                name: "Roles");
 
             migrationBuilder.DropTable(
                 name: "Users");

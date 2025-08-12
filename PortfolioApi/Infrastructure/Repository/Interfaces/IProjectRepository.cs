@@ -10,8 +10,5 @@ public interface IProjectRepository
     Task UpdateAsync(Project project);
     Task<bool> DeleteAsync(int projectId);
     Task<IEnumerable<Project>> GetByUserIdAsync(int userId);
-
-
-
-
+    Task<List<Project>> GetProjectsByUserIdAndProjectIdsAsync(int userId, List<int> projectIds);
 }

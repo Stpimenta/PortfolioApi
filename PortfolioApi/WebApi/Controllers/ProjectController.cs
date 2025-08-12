@@ -15,6 +15,8 @@ public class ProjectController : ControllerBase
     private readonly UpdateProjectUseCase _updateProjectUseCase;
     private readonly DeleteProjectUseCase _deleteProjectUseCase;
     private readonly GetProjectByIdUserUseCase _getProjectByIdUserUseCase;
+    private readonly AddImageUseCase _addImageUseCase;
+    private readonly DeleteImageUseCase _deleteImageUseCase;
 
     public ProjectController(
         GetAllProjectsUseCase getAllProjectsUseCase,
@@ -22,7 +24,9 @@ public class ProjectController : ControllerBase
         AddProjectUseCase createProjectUseCase,
         UpdateProjectUseCase updateProjectUseCase,
         DeleteProjectUseCase deleteProjectUseCase,
-        GetProjectByIdUserUseCase getProjectByIdUserUseCase)
+        GetProjectByIdUserUseCase getProjectByIdUserUseCase,
+        AddImageUseCase addImageUseCase,
+        DeleteImageUseCase deleteImageUseCase)
     {
         _getAllProjectsUseCase = getAllProjectsUseCase;
         _getProjectByIdUseCase = getProjectByIdUseCase;
@@ -30,6 +34,8 @@ public class ProjectController : ControllerBase
         _updateProjectUseCase = updateProjectUseCase;
         _deleteProjectUseCase = deleteProjectUseCase;
         _getProjectByIdUserUseCase = getProjectByIdUserUseCase;
+        _addImageUseCase = addImageUseCase;
+        _deleteImageUseCase = deleteImageUseCase;
     }
 
 
@@ -75,5 +81,19 @@ public class ProjectController : ControllerBase
         var success = await _deleteProjectUseCase.ExecuteAsync(id);
         if (!success) return NotFound();
         return NoContent();
+    }
+    
+    [HttpPost ("/images/{projectId}")]
+    public async Task<ActionResult<int>> AddImages ( int projectId, [FromForm] List<IFormFile> images)
+    {
+        await  _addImageUseCase.ExecuteAsync(projectId, images);
+        return NoContent();
+    }
+    
+    [HttpDelete("/images/{projectId}/{imageUrl}")]
+    public async Task<ActionResult> RemoveImage(int projectId, string imageUrl)
+    {
+       await  _deleteImageUseCase.ExecuteAsync(projectId, imageUrl);
+       return NoContent();
     }
 }

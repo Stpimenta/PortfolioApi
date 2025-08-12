@@ -12,8 +12,8 @@ using PortfolioApi.Infrastructure.Data;
 namespace PortfolioApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250807211057_fix-add-project")]
-    partial class fixaddproject
+    [Migration("20250810191152_add-config-in-entity")]
+    partial class addconfiginentity
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -51,6 +51,9 @@ namespace PortfolioApi.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ConfigUrl")
+                        .HasColumnType("text");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -197,6 +200,24 @@ namespace PortfolioApi.Migrations
                     b.ToTable("ProjectTechnology");
                 });
 
+            modelBuilder.Entity("ProjectUserRoleProgress", b =>
+                {
+                    b.Property<int>("ProjectsId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserRoleProgressesUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserRoleProgressesRoleId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ProjectsId", "UserRoleProgressesUserId", "UserRoleProgressesRoleId");
+
+                    b.HasIndex("UserRoleProgressesUserId", "UserRoleProgressesRoleId");
+
+                    b.ToTable("ProjectUserRoleProgress");
+                });
+
             modelBuilder.Entity("RoleTechnology", b =>
                 {
                     b.Property<int>("RolesId")
@@ -241,7 +262,8 @@ namespace PortfolioApi.Migrations
                 {
                     b.HasOne("PortfolioApi.Domain.Entities.Icons", "Icon")
                         .WithMany("Technologies")
-                        .HasForeignKey("IconId");
+                        .HasForeignKey("IconId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Icon");
                 });
@@ -295,6 +317,21 @@ namespace PortfolioApi.Migrations
                     b.HasOne("PortfolioApi.Domain.Entities.Technology", null)
                         .WithMany()
                         .HasForeignKey("TechnologiesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ProjectUserRoleProgress", b =>
+                {
+                    b.HasOne("PortfolioApi.Domain.Entities.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PortfolioApi.Domain.Entities.UserRoleProgress", null)
+                        .WithMany()
+                        .HasForeignKey("UserRoleProgressesUserId", "UserRoleProgressesRoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

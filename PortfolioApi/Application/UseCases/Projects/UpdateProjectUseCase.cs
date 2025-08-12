@@ -29,67 +29,79 @@ public class UpdateProjectUseCase
 
     public async Task ExecuteAsync(int id, UpdateProjectDto dto)
     {
-        
         var project = await _repository.GetByIdAsync(id);
-        
         if (project is null)
             throw new NotFoundException($"project with id:{id} not found");
         
         var user = await _repositoryUser.GetUserByIdAsync(dto.UserId);
-        
-        if(user is null)
+        if (user is null)
             throw new NotFoundException($"User with id:{dto.UserId} not found");
         
+        _mapper.Map(dto, project);
         
-        _mapper.Map(dto,project);
+        if (dto.TechnologyIds == null || !dto.TechnologyIds.Any())
+        {
         
-        
-        var technologies = await _repositoryTechnology.GetByTechIdsAsync(dto.TechnologyIds);
+            project.Technologies.Clear();
+        }
+        else
+        {
+            var technologies = await _repositoryTechnology.GetByTechIdsAsync(dto.TechnologyIds);
 
-        if (dto.TechnologyIds.Count != technologies.Count())
-        {
-            var notFoudIds = dto.TechnologyIds
-                .Except(technologies.Select(t => t.Id))
-                .ToList();
-            
-            throw new NotFoundException($"technologies with Ids {string.Join(", ",notFoudIds)} not found");
-        }
-        
-           
-        var toRemove = project.Technologies.Where(t => !dto.TechnologyIds.Contains(t.Id)).ToList();
-        foreach (var tech in toRemove)
-        {
-            project.Technologies.Remove(tech);
-        }
-        
-        var toAdd = technologies.Where (t => project.Technologies.All(pt => pt.Id != t.Id)).ToList();
-        
-        foreach (var tech in toAdd )
-        {
-            project.Technologies.Add(tech);
-        }
+            if (dto.TechnologyIds.Count != technologies.Count())
+            {
+                var notFoudIds = dto.TechnologyIds
+                    .Except(technologies.Select(t => t.Id))
+                    .ToList();
+                throw new NotFoundException($"technologies with Ids {string.Join(", ", notFoudIds)} not found");
+            }
 
+            var toRemove = project.Technologies.Where(t => !dto.TechnologyIds.Contains(t.Id)).ToList();
+            foreach (var tech in toRemove)
+            {
+                project.Technologies.Remove(tech);
+            }
+
+            var toAdd = technologies.Where(t => project.Technologies.All(pt => pt.Id != t.Id)).ToList();
+            foreach (var tech in toAdd)
+            {
+                project.Technologies.Add(tech);
+            }
+        }
 
         if (dto.Icon is not null && dto.Icon.Length > 0)
         {
             var extension = Path.GetExtension(dto.Icon.FileName).ToLowerInvariant();
-            if (extension != ".png")
-                throw new BusinessException("invalid file extension, only png is allowed.");
+            if (extension != ".png" &&  extension != ".jpg" &&  extension != ".jpeg")
+                throw new BusinessException($"invalid file extension, only png, jpg or jpeg is allowed {dto.Icon.FileName}.");
             
             string keyName = $"icons/project/{Guid.NewGuid()}{extension}";
-            
             var iconId = await _amazonS3Service.UploadFile(dto.Icon.OpenReadStream(), keyName);
-            
-            
+
             if (project.Icon is not null)
             {
                 await _amazonS3Service.DeleteFileAsync(project.Icon);
             }
-            
             project.Icon = iconId;
         }
         
-        await _repository.UpdateAsync(project);
+        if (dto.ConfigUrl is not null && dto.ConfigUrl.Length > 0)
+        {
+            if (project.ConfigUrl is not null && !string.IsNullOrEmpty(project.ConfigUrl))
+            {
+                await _amazonS3Service.DeleteFileAsync(project.ConfigUrl);
+            }
+            
+            var extension = Path.GetExtension(dto.ConfigUrl.FileName).ToLowerInvariant();
+            if(extension != ".json")
+                throw new BusinessException("invalid file extension, only png is allowed.");
+            string keyName = $"project_config/{Guid.NewGuid()}{extension}";
+            var url = await _amazonS3Service.UploadFile(dto.ConfigUrl.OpenReadStream(), keyName);
+            project.ConfigUrl = url;
+        }
         
+        
+        await _repository.UpdateAsync(project);
     }
+
 }

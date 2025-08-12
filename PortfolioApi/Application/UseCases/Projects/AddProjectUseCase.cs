@@ -57,11 +57,37 @@ public class AddProjectUseCase
          if (dto.Icon != null && dto.Icon.Length > 0)
          {
              var extension = Path.GetExtension(dto.Icon.FileName).ToLowerInvariant();
-             if (extension != ".png")
-                 throw new BusinessException("invalid file extension, only png is allowed.");
+             if (extension != ".png" &&  extension != ".jpg" &&  extension != ".jpeg")
+                 throw new BusinessException($"invalid file extension, only png, jpg or jpeg is allowed {dto.Icon.FileName}.");
              string keyName = $"icons/project/{Guid.NewGuid()}{extension}";
              var iconId = await _amazonS3.UploadFile(dto.Icon.OpenReadStream(), keyName);
              project.Icon = iconId;
+         }
+         
+         if (dto.ConfigUrl is not null && dto.ConfigUrl.Length > 0)
+         {
+             var extension = Path.GetExtension(dto.ConfigUrl.FileName).ToLowerInvariant();
+             if(extension != ".json")
+                 throw new BusinessException("invalid file extension, only json is allowed.");
+             string keyName = $"project_config/{Guid.NewGuid()}{extension}";
+             var url = await _amazonS3.UploadFile(dto.ConfigUrl.OpenReadStream(), keyName);
+             project.ConfigUrl = url;
+         }
+
+         if (dto.Images.Any())
+         {
+             List<string> urlImages = new();
+             
+             foreach (var image in dto.Images)
+             {
+                 var extension = Path.GetExtension(image.FileName).ToLowerInvariant();
+                 if (extension != ".png" &&  extension != ".jpg" &&  extension != ".jpeg")
+                     throw new BusinessException($"invalid file extension, only png, jpg or jpeg is allowed {image.FileName}.");
+                 string keyName = $"project_images/{Guid.NewGuid()}{extension}";
+                 var url = await _amazonS3.UploadFile(image.OpenReadStream(), keyName);
+                 urlImages.Add(url);
+             }
+             project.Images = urlImages;
          }
          
 

@@ -6,6 +6,8 @@ public class User
     public string? Name { get; set; }
     public string? Email { get; set; }
     public string? Password { get; set; }
+    
+    public string? ConfigUrl { get; set; }
 
     public ICollection<Project> Projects { get; set; } = new List<Project>();
     public ICollection<UserTechProgress> UserTechnologies { get; set; } = new List<UserTechProgress>();

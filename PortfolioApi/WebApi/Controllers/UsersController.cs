@@ -42,14 +42,14 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<int>> Post([FromBody] CreateUserDto user)
+    public async Task<ActionResult<int>> Post([FromForm] CreateUserDto user)
     {
         var userId = await _addUserUseCase.ExecuteAsync(user);
         return CreatedAtAction(nameof(GetById), new { id = userId }, userId);
     }
     
     [HttpPut("{id}")]
-    public async Task<ActionResult<int>> UpdateUser([FromBody] UpdateUserDto userDto, int id)
+    public async Task<ActionResult<int>> UpdateUser([FromForm] UpdateUserDto userDto, int id)
     {
         var user = await _updateUserByIdUseCase.ExecuteAsync(id,userDto);
         if (user == null) return NotFound();
