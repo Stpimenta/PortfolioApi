@@ -7,6 +7,7 @@ namespace PortfolioApi.Application.UseCases.Users;
 
 public class UpdateUserUseCase
 {
+
     private readonly IUserRepository _repository;
     private readonly AmazonS3Service  _amazonS3Service;
 
