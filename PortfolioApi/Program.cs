@@ -89,6 +89,8 @@ builder.Services.AddScoped<AddProjectUseCase>();
 builder.Services.AddScoped<UpdateProjectUseCase>();
 builder.Services.AddScoped<DeleteProjectUseCase>();
 builder.Services.AddScoped<GetProjectByIdUserUseCase>();
+builder.Services.AddScoped<AddImageUseCase>();
+builder.Services.AddScoped<DeleteImageUseCase>();
 
 // Roles
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();

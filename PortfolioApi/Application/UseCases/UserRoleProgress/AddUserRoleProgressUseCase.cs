@@ -11,13 +11,16 @@ public class AddUserRoleProgressUseCase
     private readonly IUserRepository _userRepository;
     private readonly IRoleRepository _roleRepository;
     private readonly IMapper _mapper;
+    private readonly IProjectRepository _projectRepository;
     
-    public  AddUserRoleProgressUseCase(IUserRoleProgressRepository repository,  IMapper mapper,  IUserRepository userRepository, IRoleRepository roleRepository)
+    public  AddUserRoleProgressUseCase(IUserRoleProgressRepository repository,  IMapper mapper,  
+        IUserRepository userRepository, IRoleRepository roleRepository,  IProjectRepository projectRepository)
     {
         _repository = repository;
         _mapper = mapper;
         _userRepository = userRepository;
         _roleRepository = roleRepository;
+        _projectRepository = projectRepository;
         
     }
 
@@ -36,9 +39,30 @@ public class AddUserRoleProgressUseCase
         var role = await _roleRepository.GetByIdAsync(dto.RoleId);
         if (role == null)
             throw new NotFoundException("Role not found");
-        
+    
         var roleProgress = _mapper.Map<Domain.Entities.UserRoleProgress>(dto);
-        await _repository.AddAsync(roleProgress);
         
+        
+        if (dto.ProjectIds.Any())
+        { 
+            var projects = await _projectRepository.GetProjectsByUserIdAndProjectIdsAsync
+                (dto.UserId, dto.ProjectIds);
+
+
+            var missingIds =
+                dto.ProjectIds.Except(projects.Select(p => p.Id))
+                    .ToList(); 
+            
+            if(missingIds.Any())
+                throw new NotFoundException($"Projects with Ids: {string.Join(", ", missingIds)} not found");
+
+            foreach (var project in projects)
+            {
+                roleProgress.Projects.Add(project);
+            }
+            
+        }
+        
+        await _repository.AddAsync(roleProgress);
     }
 }

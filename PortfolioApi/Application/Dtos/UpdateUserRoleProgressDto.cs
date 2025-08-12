@@ -12,4 +12,6 @@ public class UpdateUserRoleProgressDto
     
     [Range(0, 100)]
     public double Progress { get; set; }
+    
+    public List<int> ProjectIds { get; set; } = new ();
 }

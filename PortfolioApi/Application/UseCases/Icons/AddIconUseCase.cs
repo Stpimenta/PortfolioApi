@@ -26,8 +26,8 @@ public class AddIconUseCase
             throw new BusinessException("file is empty");
         
         var extension = Path.GetExtension(iconDto.Icon.FileName).ToLowerInvariant();
-        if(extension != ".png")
-            throw new BusinessException("invalid file extension, only png is allowed.");
+        if (extension != ".png" &&  extension != ".jpg" &&  extension != ".jpeg")
+            throw new BusinessException($"invalid file extension, only png, jpg or jpeg is allowed {iconDto.Icon.FileName}.");
 
         string keyName = $"icons/public/{Guid.NewGuid()}{extension}";
         var url = await _amazonS3Service.UploadFile(iconDto.Icon.OpenReadStream(), keyName);

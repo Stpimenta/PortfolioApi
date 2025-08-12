@@ -12,8 +12,8 @@ using PortfolioApi.Infrastructure.Data;
 namespace PortfolioApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250808150050_fix-delete-icon")]
-    partial class fixdeleteicon
+    [Migration("20250809164056_initial-migration")]
+    partial class initialmigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -197,6 +197,24 @@ namespace PortfolioApi.Migrations
                     b.ToTable("ProjectTechnology");
                 });
 
+            modelBuilder.Entity("ProjectUserRoleProgress", b =>
+                {
+                    b.Property<int>("ProjectsId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserRoleProgressesUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserRoleProgressesRoleId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ProjectsId", "UserRoleProgressesUserId", "UserRoleProgressesRoleId");
+
+                    b.HasIndex("UserRoleProgressesUserId", "UserRoleProgressesRoleId");
+
+                    b.ToTable("ProjectUserRoleProgress");
+                });
+
             modelBuilder.Entity("RoleTechnology", b =>
                 {
                     b.Property<int>("RolesId")
@@ -296,6 +314,21 @@ namespace PortfolioApi.Migrations
                     b.HasOne("PortfolioApi.Domain.Entities.Technology", null)
                         .WithMany()
                         .HasForeignKey("TechnologiesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ProjectUserRoleProgress", b =>
+                {
+                    b.HasOne("PortfolioApi.Domain.Entities.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PortfolioApi.Domain.Entities.UserRoleProgress", null)
+                        .WithMany()
+                        .HasForeignKey("UserRoleProgressesUserId", "UserRoleProgressesRoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

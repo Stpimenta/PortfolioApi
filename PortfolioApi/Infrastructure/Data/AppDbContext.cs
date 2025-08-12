@@ -54,16 +54,26 @@ public class AppDbContext : DbContext
             .WithMany() 
             .HasForeignKey(r => r.IconId)
             .OnDelete(DeleteBehavior.SetNull);
-        
-        modelBuilder.Entity<Project>()
-            .HasMany(p => p.Technologies)
-            .WithMany(t => t.Projects);
+
+        modelBuilder.Entity<Project>(entity =>
+        {
+            entity.HasMany(p => p.Technologies)
+                .WithMany(t => t.Projects);
+
+            entity.Property(p => p.Images)
+                .HasColumnType("text[]");
+
+        });
 
         modelBuilder.Entity<Technology>()
             .HasOne(t => t.Icon)
             .WithMany(i => i.Technologies)
             .OnDelete(DeleteBehavior.SetNull);
-            
+
+        modelBuilder.Entity<UserRoleProgress>()
+            .HasMany(urp => urp.Projects)
+            .WithMany(p => p.UserRoleProgresses);
+           
 
         base.OnModelCreating(modelBuilder);
     }
