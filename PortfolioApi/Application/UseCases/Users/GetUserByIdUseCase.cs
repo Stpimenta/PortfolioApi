@@ -16,13 +16,13 @@ public class GetUserByIdUseCase
         _mapper = mapper;
     }
 
-    public async Task<UserWithProjectNamesDto?> ExecuteAsync(int userId)
+    public async Task<GetUserDto?> ExecuteAsync(int userId)
     {
         var user = await _userRepository.GetUserByIdAsync(userId);
         if (user is null)
         {
             throw new NotFoundException($"user {userId} not found");
         }
-        return _mapper.Map<UserWithProjectNamesDto>(user);
+        return _mapper.Map<GetUserDto>(user);
     }
 }
