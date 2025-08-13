@@ -64,14 +64,14 @@ public class AddProjectUseCase
              project.Icon = iconId;
          }
          
-         if (dto.ConfigUrl is not null && dto.ConfigUrl.Length > 0)
+         if (dto.Config is not null && dto.Config.Length > 0)
          {
-             var extension = Path.GetExtension(dto.ConfigUrl.FileName).ToLowerInvariant();
+             var extension = Path.GetExtension(dto.Config.FileName).ToLowerInvariant();
              if(extension != ".json")
                  throw new BusinessException("invalid file extension, only json is allowed.");
              string keyName = $"project_config/{Guid.NewGuid()}{extension}";
-             var url = await _amazonS3.UploadFile(dto.ConfigUrl.OpenReadStream(), keyName);
-             project.ConfigUrl = url;
+             var url = await _amazonS3.UploadFile(dto.Config.OpenReadStream(), keyName);
+             project.Config = url;
          }
 
          if (dto.Images.Any())

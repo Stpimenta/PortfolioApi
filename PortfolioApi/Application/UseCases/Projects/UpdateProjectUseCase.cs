@@ -85,19 +85,19 @@ public class UpdateProjectUseCase
             project.Icon = iconId;
         }
         
-        if (dto.ConfigUrl is not null && dto.ConfigUrl.Length > 0)
+        if (dto.Config is not null && dto.Config.Length > 0)
         {
-            if (project.ConfigUrl is not null && !string.IsNullOrEmpty(project.ConfigUrl))
+            if (project.Config is not null && !string.IsNullOrEmpty(project.Config))
             {
-                await _amazonS3Service.DeleteFileAsync(project.ConfigUrl);
+                await _amazonS3Service.DeleteFileAsync(project.Config);
             }
             
-            var extension = Path.GetExtension(dto.ConfigUrl.FileName).ToLowerInvariant();
+            var extension = Path.GetExtension(dto.Config.FileName).ToLowerInvariant();
             if(extension != ".json")
                 throw new BusinessException("invalid file extension, only png is allowed.");
             string keyName = $"project_config/{Guid.NewGuid()}{extension}";
-            var url = await _amazonS3Service.UploadFile(dto.ConfigUrl.OpenReadStream(), keyName);
-            project.ConfigUrl = url;
+            var url = await _amazonS3Service.UploadFile(dto.Config.OpenReadStream(), keyName);
+            project.Config = url;
         }
         
         

@@ -7,20 +7,20 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<CreateUserDto, User>()
-            .ForMember(dest=> dest.ConfigUrl, opt => opt.Ignore());
+            .ForMember(dest=> dest.Config, opt => opt.Ignore());
         CreateMap<CreateIconDto, Icons>();
         CreateMap<CreateTechnologyDto, Technology>();
         CreateMap<CreateRoleDto, Role>();
         CreateMap<CreateProjectDto, Project>()
-            .ForMember(dest=> dest.ConfigUrl, opt => opt.Ignore())
+            .ForMember(dest=> dest.Config, opt => opt.Ignore())
             .ForMember(dest => dest.Images, opt => opt.Ignore());
         CreateMap<UpdateProjectDto, Project>()
             .ForMember(dest => dest.Technologies, opt => opt.Ignore())
             .ForMember(dest => dest.Icon, opt => opt.Ignore())
-            .ForMember(dest=> dest.ConfigUrl, opt => opt.Ignore());
+            .ForMember(dest=> dest.Config, opt => opt.Ignore());
 
         CreateMap<UpdateUserDto, User>()
-            .ForMember(dest=> dest.ConfigUrl, opt => opt.Ignore());
+            .ForMember(dest=> dest.Config, opt => opt.Ignore());
         
         CreateMap<UpdateTechnologyDto, Technology>();
         CreateMap<User, UserWithProjectNamesDto>()

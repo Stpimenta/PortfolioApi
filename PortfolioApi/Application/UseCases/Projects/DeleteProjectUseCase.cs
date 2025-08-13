@@ -24,9 +24,9 @@ public class DeleteProjectUseCase
         if (existing.Icon is not null)
             await _amazonS3.DeleteFileAsync(existing.Icon);
         
-        if (existing.ConfigUrl is not null)
+        if (existing.Config is not null)
         {
-            await _amazonS3.DeleteFileAsync(existing.ConfigUrl);
+            await _amazonS3.DeleteFileAsync(existing.Config);
         }
 
         if ( existing.Images is not null && existing.Images.Any())

@@ -36,14 +36,14 @@ public class AddUserUseCase
         user.Password = hashPass;
         
         
-        if (userDto.ConfigUrl is not null && userDto.ConfigUrl.Length > 0)
+        if (userDto.Config is not null && userDto.Config.Length > 0)
         {
-            var extension = Path.GetExtension(userDto.ConfigUrl.FileName).ToLowerInvariant();
+            var extension = Path.GetExtension(userDto.Config.FileName).ToLowerInvariant();
             if(extension != ".json")
                 throw new BusinessException("invalid file extension, only png is allowed.");
             string keyName = $"user_config/{Guid.NewGuid()}{extension}";
-            var url = await _amazonS3Service.UploadFile(userDto.ConfigUrl.OpenReadStream(), keyName);
-            user.ConfigUrl = url;
+            var url = await _amazonS3Service.UploadFile(userDto.Config.OpenReadStream(), keyName);
+            user.Config = url;
         }
 
         return await _userRepository.AddUserAsync(user);

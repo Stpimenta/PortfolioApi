@@ -12,7 +12,7 @@ public class CreateProjectDto
     public string? Download { get; set; }
     
     public string? Git { get; set; }
-    public IFormFile? ConfigUrl { get; set; }
+    public IFormFile? Config { get; set; }
     public IFormFile? Icon { get; set; }
 
     public List<IFormFile> Images { get; set; } = new();

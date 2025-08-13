@@ -9,7 +9,7 @@ public class GetProjectDto
     public string? Git { get; set; }
     public string? Icon { get; set; }
     public GetUserDto? User { get; set; }
-    public string? ConfigUrl { get; set; }
+    public string? Config { get; set; }
     public List<string>? Images { get; set; }
     public List<TechnologyDto> Technologies { get; set; } = new();
 }

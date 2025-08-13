@@ -10,7 +10,7 @@ public class Project
     public string? Icon {get; set;}
     public int UserId { get; set; }
 
-    public string? ConfigUrl { get; set; }
+    public string? Config { get; set; }
 
     public List<string>? Images { get; set; } = new();
     public User User { get; set; }
