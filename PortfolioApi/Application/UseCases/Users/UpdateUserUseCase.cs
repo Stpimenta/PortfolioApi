@@ -26,7 +26,7 @@ public class UpdateUserUseCase
 
         existingUser.Name = userDto.Name;
         existingUser.Email = userDto.Email;
-        existingUser.Password = userDto.Password;
+
         
         if (userDto.Config is not null && userDto.Config.Length > 0)
         {

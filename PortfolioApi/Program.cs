@@ -29,12 +29,13 @@ builder.WebHost.ConfigureKestrel(options =>
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy =>
-    {
-        policy.AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader();
-    });
+    options.AddPolicy("AllowFrontend",
+        policy =>
+        {
+            policy.WithOrigins("https://stpimenta.com", "https://gurdiano.com")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
 });
 
 // Add services to the container.
@@ -43,7 +44,6 @@ builder.Services.AddSwaggerGen();
 
 //database
 builder.Services.AddDbContext<AppDbContext>(
-
     options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
@@ -120,6 +120,7 @@ builder.Services.AddScoped<GetUserTechnologyUseCase>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<AmazonS3Service>();
+builder.Services.AddHttpClient<GetAllProjectsUseCase>();
 
 //jwt
 var jwtSettings = builder.Configuration.GetSection("Jwt");
@@ -166,7 +167,7 @@ builder.Services.AddSingleton<Amazon.S3.IAmazonS3>(sp =>
 
 builder.Services.AddControllers();
 var app = builder.Build();
-app.UseCors("AllowAll");
+app.UseCors("AllowFrontend");
 
 //migrations
 // using (var scope = app.Services.CreateScope())

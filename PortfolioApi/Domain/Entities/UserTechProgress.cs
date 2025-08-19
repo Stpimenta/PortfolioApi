@@ -8,4 +8,5 @@ public class UserTechProgress
     public int TechId { get; set; }
     public Technology Tech { get; set; } = null!;
     public double Progress { get; set; }
+    public ICollection<Project> Projects   { get; set; } = new List<Project>();
 }

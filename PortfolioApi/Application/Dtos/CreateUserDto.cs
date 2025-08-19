@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 
 namespace PortfolioApi.Application.Dtos;
 
@@ -16,4 +17,6 @@ public class CreateUserDto
     [MinLength(6, ErrorMessage = "Password must be at least 6 characters.")]
     [RegularExpression(@"^(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\-]).+$", ErrorMessage = "Password must contain at least one special character.")]
     public string? Password { get; set; }
+    
+    
 }

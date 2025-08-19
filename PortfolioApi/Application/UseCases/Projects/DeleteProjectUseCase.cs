@@ -25,10 +25,8 @@ public class DeleteProjectUseCase
             await _amazonS3.DeleteFileAsync(existing.Icon);
         
         if (existing.Config is not null)
-        {
             await _amazonS3.DeleteFileAsync(existing.Config);
-        }
-
+        
         if ( existing.Images is not null && existing.Images.Any())
         {
             foreach (var image in existing.Images)

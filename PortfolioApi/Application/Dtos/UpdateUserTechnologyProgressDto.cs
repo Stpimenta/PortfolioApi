@@ -10,4 +10,6 @@ public class UpdateUserTechnologyProgressDto
     public int TechId { get; set; }
     [Range(0,100)]
     public double Progress { get; set; }
+    
+    public List<int> ProjectIds { get; set; } = new ();
 }
