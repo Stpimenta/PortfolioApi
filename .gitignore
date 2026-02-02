@@ -4,4 +4,9 @@ obj/
 riderModule.iml
 /_ReSharper.Caches/
 PortfolioApi/appsettings.json
+
+feature/add-git-actions
 PortfolioApi/compose.yaml
+
+appsettings.json
+ main
