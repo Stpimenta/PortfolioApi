@@ -19,6 +19,7 @@ public class UserTechnologyRepository:IUserTechnologyRepository
         return await _context.UserTechProgress
             .Include(utp => utp.Tech)
             .ThenInclude(t => t.Icon)
+            .Include(utp => utp.Projects)
             .Where(utp => utp.UserId == userId)
             .AsNoTracking()
             .ToListAsync();
@@ -28,7 +29,10 @@ public class UserTechnologyRepository:IUserTechnologyRepository
     {
         return await _context.UserTechProgress
             .Include(utp => utp.Tech)
-            .ThenInclude(t => t.Icon)
+                .ThenInclude(t => t.Icon)
+             .Include(utp => utp.Tech)
+                .ThenInclude(t => t.Icon)
+            .Include(utp => utp.Projects)
             .FirstOrDefaultAsync(utp => utp.UserId == userId && utp.TechId == techId);
     }
 

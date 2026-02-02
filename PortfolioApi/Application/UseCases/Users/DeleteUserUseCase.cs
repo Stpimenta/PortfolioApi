@@ -22,9 +22,9 @@ public class DeleteUserUseCase
         if (existingUser == null)
             throw new NotFoundException($"User with id {id} not found.");
 
-        if (existingUser.ConfigUrl is not null)
+        if (existingUser.Config is not null)
         {
-            await _amazonS3Service.DeleteFileAsync(existingUser.ConfigUrl);
+            await _amazonS3Service.DeleteFileAsync(existingUser.Config);
         }
         
 

@@ -58,11 +58,11 @@ public class CreateUserUseCaseTests
         var dto = new CreateUserDto
         {
             Name = "Test User",
-            Email = "test@example.com",
+            Email = "test@123example.com",
             Password = "123456"
         };
 
-        var existingUser = new User { Email = dto.Email };
+        var existingUser = new User { Email = "test@123example.com" };
         
         mockRepo.Setup(r => r.GetUserByEmail(dto.Email)).ReturnsAsync(existingUser);
             

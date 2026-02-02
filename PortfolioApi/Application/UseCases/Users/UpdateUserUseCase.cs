@@ -27,21 +27,21 @@ public class UpdateUserUseCase
 
         existingUser.Name = userDto.Name;
         existingUser.Email = userDto.Email;
-        existingUser.Password = userDto.Password;
+
         
-        if (userDto.ConfigUrl is not null && userDto.ConfigUrl.Length > 0)
+        if (userDto.Config is not null && userDto.Config.Length > 0)
         {
-            if (existingUser.ConfigUrl is not null && !string.IsNullOrEmpty(existingUser.ConfigUrl))
+            if (existingUser.Config is not null && !string.IsNullOrEmpty(existingUser.Config))
             {
-                await _amazonS3Service.DeleteFileAsync(existingUser.ConfigUrl);
+                await _amazonS3Service.DeleteFileAsync(existingUser.Config);
             }
             
-            var extension = Path.GetExtension(userDto.ConfigUrl.FileName).ToLowerInvariant();
+            var extension = Path.GetExtension(userDto.Config.FileName).ToLowerInvariant();
             if(extension != ".json")
                 throw new BusinessException("invalid file extension, only png is allowed.");
             string keyName = $"user_config/{Guid.NewGuid()}{extension}";
-            var url = await _amazonS3Service.UploadFile(userDto.ConfigUrl.OpenReadStream(), keyName);
-            existingUser.ConfigUrl = url;
+            var url = await _amazonS3Service.UploadFile(userDto.Config.OpenReadStream(), keyName);
+            existingUser.Config = url;
         }
 
         await _repository.UpdateUserAsync(existingUser, id);

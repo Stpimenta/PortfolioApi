@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PortfolioApi.Infrastructure.Data;
@@ -12,9 +13,11 @@ using PortfolioApi.Infrastructure.Data;
 namespace PortfolioApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250814194852_fragment-project-config")]
+    partial class fragmentprojectconfig
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,10 +53,13 @@ namespace PortfolioApi.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Config")
+                    b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<string>("Description")
+                    b.Property<string>("Download")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Git")
                         .HasColumnType("text");
 
                     b.Property<string>("Icon")
@@ -216,24 +222,6 @@ namespace PortfolioApi.Migrations
                     b.ToTable("ProjectUserRoleProgress");
                 });
 
-            modelBuilder.Entity("ProjectUserTechProgress", b =>
-                {
-                    b.Property<int>("ProjectsId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("UserTechProgressesUserId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("UserTechProgressesTechId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("ProjectsId", "UserTechProgressesUserId", "UserTechProgressesTechId");
-
-                    b.HasIndex("UserTechProgressesUserId", "UserTechProgressesTechId");
-
-                    b.ToTable("ProjectUserTechProgress");
-                });
-
             modelBuilder.Entity("RoleTechnology", b =>
                 {
                     b.Property<int>("RolesId")
@@ -257,7 +245,67 @@ namespace PortfolioApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.OwnsOne("PortfolioApi.Domain.ValueObjects.DocumentConfig", "documentConfig", b1 =>
+                        {
+                            b1.Property<int>("ProjectId")
+                                .HasColumnType("integer");
+
+                            b1.Property<string>("Documents")
+                                .HasColumnType("jsonb");
+
+                            b1.HasKey("ProjectId");
+
+                            b1.ToTable("Projects");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ProjectId");
+                        });
+
+                    b.OwnsOne("PortfolioApi.Domain.ValueObjects.DownloadConfig", "downloadConfig", b1 =>
+                        {
+                            b1.Property<int>("ProjectId")
+                                .HasColumnType("integer");
+
+                            b1.Property<string>("Plataforms")
+                                .HasColumnType("jsonb");
+
+                            b1.Property<string>("Steps")
+                                .HasColumnType("jsonb");
+
+                            b1.HasKey("ProjectId");
+
+                            b1.ToTable("Projects");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ProjectId");
+                        });
+
+                    b.OwnsOne("PortfolioApi.Domain.ValueObjects.GitConfig", "gitConfig", b1 =>
+                        {
+                            b1.Property<int>("ProjectId")
+                                .HasColumnType("integer");
+
+                            b1.Property<string>("Gits")
+                                .HasColumnType("jsonb");
+
+                            b1.HasKey("ProjectId");
+
+                            b1.ToTable("Projects");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ProjectId");
+                        });
+
                     b.Navigation("User");
+
+                    b.Navigation("documentConfig")
+                        .IsRequired();
+
+                    b.Navigation("downloadConfig")
+                        .IsRequired();
+
+                    b.Navigation("gitConfig")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("PortfolioApi.Domain.Entities.Role", b =>
@@ -348,21 +396,6 @@ namespace PortfolioApi.Migrations
                     b.HasOne("PortfolioApi.Domain.Entities.UserRoleProgress", null)
                         .WithMany()
                         .HasForeignKey("UserRoleProgressesUserId", "UserRoleProgressesRoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ProjectUserTechProgress", b =>
-                {
-                    b.HasOne("PortfolioApi.Domain.Entities.Project", null)
-                        .WithMany()
-                        .HasForeignKey("ProjectsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PortfolioApi.Domain.Entities.UserTechProgress", null)
-                        .WithMany()
-                        .HasForeignKey("UserTechProgressesUserId", "UserTechProgressesTechId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

@@ -1,4 +1,5 @@
 using Amazon.S3;
+using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 
 namespace PortfolioApi.Application.Services;
@@ -40,6 +41,14 @@ public class AmazonS3Service
         };
 
         await _client.DeleteObjectAsync(deleteRequest);
+    }
+    
+    
+    public async Task<string> GetFileAsStringAsync(string keyName)
+    {
+        var response = await _client.GetObjectAsync(_bucketName, keyName);
+        using var reader = new StreamReader(response.ResponseStream);
+        return await reader.ReadToEndAsync();
     }
 
 }

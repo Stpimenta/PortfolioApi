@@ -1,5 +1,7 @@
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using PortfolioApi.Domain.Entities;
+using PortfolioApi.Domain.ValueObjects;
 
 
 namespace PortfolioApi.Infrastructure.Data;
@@ -57,12 +59,13 @@ public class AppDbContext : DbContext
 
         modelBuilder.Entity<Project>(entity =>
         {
+            
             entity.HasMany(p => p.Technologies)
                 .WithMany(t => t.Projects);
-
+          
             entity.Property(p => p.Images)
                 .HasColumnType("text[]");
-
+            
         });
 
         modelBuilder.Entity<Technology>()
@@ -73,6 +76,10 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<UserRoleProgress>()
             .HasMany(urp => urp.Projects)
             .WithMany(p => p.UserRoleProgresses);
+        
+        modelBuilder.Entity<UserTechProgress>()
+            .HasMany(urp => urp.Projects)
+            .WithMany(p => p.UserTechProgresses);
            
 
         base.OnModelCreating(modelBuilder);
