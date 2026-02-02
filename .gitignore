@@ -4,3 +4,4 @@ obj/
 riderModule.iml
 /_ReSharper.Caches/
 PortfolioApi/appsettings.json
+PortfolioApi/compose.yaml
