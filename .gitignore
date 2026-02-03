@@ -10,3 +10,8 @@ PortfolioApi/compose.yaml
 
 appsettings.json
  main
+
+
+# JetBrains
+.idea/
+*.sln.DotSettings.user
