@@ -27,9 +27,9 @@ jobs:
       - name: Build Docker image
         run: |
           docker build \
-            -f PortfolioApi/PortfolioApi/Dockerfile \
+            -f Dockerfile \
             -t $IMAGE_NAME \
-            PortfolioApi/PortfolioApi
+            .
 
       - name: Push Docker image to GHCR
         run: |
