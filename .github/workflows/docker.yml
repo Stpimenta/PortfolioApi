@@ -2,14 +2,16 @@ name: Build Docker Image
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+  workflow_dispatch:
 
 env:
   IMAGE_NAME: portfolioapi:latest
 
 jobs:
   docker:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout
