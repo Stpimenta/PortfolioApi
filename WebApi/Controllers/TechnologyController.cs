@@ -47,7 +47,7 @@ namespace PortfolioApi.WebApi.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+       
         public async Task<ActionResult<int>> Post([FromBody] CreateTechnologyDto dto)
         {
             var techId = await _addTechnologyUseCase.ExecuteAsync(dto);
