@@ -34,14 +34,23 @@ builder.WebHost.ConfigureKestrel(options =>
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend",
-        policy =>
-        {
-            policy.WithOrigins("https://stpimenta.com", "https://www.stpimenta.com", "https://gurdiano.com", "https://www.gurdiano.com", "https://portadmin.stpimenta.com", "https://portadmin.gurdiano.com")
-                .AllowAnyHeader()
-                .AllowAnyMethod();
-        });
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy
+            .SetIsOriginAllowed(origin =>
+                origin == "https://stpimenta.com" ||
+                origin == "https://www.stpimenta.com" ||
+                origin == "https://portadmin.stpimenta.com" ||
+                origin == "https://portawsapi.stpimenta.com" ||
+                origin == "https://gurdiano.com" ||
+                origin == "https://www.gurdiano.com" ||
+                origin == "https://portadmin.gurdiano.com"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
 });
+
 
 // Add services to the container.
 builder.Services.AddEndpointsApiExplorer();
