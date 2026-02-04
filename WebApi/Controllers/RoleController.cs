@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PortfolioApi.Application.Dtos;
 using PortfolioApi.Application.UseCases.Roles;
@@ -31,6 +32,7 @@ public class RolesController : ControllerBase
     
    
     [HttpGet("GetAll")]
+    [AllowAnonymous]
     public async Task<ActionResult<IEnumerable<Role>>> GetAll()
     {
         var roles = await _getAllRolesUseCase.ExecuteAsync();
@@ -38,6 +40,7 @@ public class RolesController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [AllowAnonymous]
     public async Task<ActionResult<RoleWithTechnologiesDto>> GetById(int id)
     {
         var role = await _getRoleByIdUseCase.ExecuteAsync(id);
@@ -45,6 +48,7 @@ public class RolesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<ActionResult<int>> Create([FromBody] CreateRoleDto dto)
     {
         var id = await _createRoleUseCase.ExecuteAsync(dto);
@@ -52,6 +56,7 @@ public class RolesController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize]
     public async Task<ActionResult> Update(int id, [FromBody] UpdateRoleDto dto)
     {
         await _updateRoleUseCase.ExecuteAsync(id, dto);
@@ -59,6 +64,7 @@ public class RolesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize]
     public async Task<ActionResult> Delete(int id)
     {
         var success = await _deleteRoleUseCase.ExecuteAsync(id);

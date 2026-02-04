@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PortfolioApi.Application.Dtos;
 using PortfolioApi.Application.UseCases.Users;
@@ -27,6 +28,7 @@ public class UsersController : ControllerBase
     }
     
     [HttpGet("GetAll")]
+    [AllowAnonymous]
     public async Task<ActionResult<IEnumerable<GetUserDto>>> GetAll()
     {
         var users = await _getAllUsersUseCase.ExecuteAsync();
@@ -34,6 +36,7 @@ public class UsersController : ControllerBase
     }
     
     [HttpGet("{id}")]
+    [AllowAnonymous]
     public async Task<ActionResult<GetUserDto>> GetById(int id)
     {
         var user = await _getUserByIdUseCase.ExecuteAsync(id);
@@ -42,6 +45,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<ActionResult<int>> Post([FromForm] CreateUserDto user)
     {
         var userId = await _addUserUseCase.ExecuteAsync(user);
@@ -49,6 +53,7 @@ public class UsersController : ControllerBase
     }
     
     [HttpPut("{id}")]
+    [Authorize]
     public async Task<ActionResult<int>> UpdateUser([FromForm] UpdateUserDto userDto, int id)
     {
         var user = await _updateUserByIdUseCase.ExecuteAsync(id,userDto);
@@ -57,6 +62,7 @@ public class UsersController : ControllerBase
     }
     
     [HttpDelete("{id}")]
+    [Authorize]
     public async Task<ActionResult<bool>> DeleteUser(int id)
     {
         var user = await _deleteUserByIdUseCase.ExecuteAsync(id);

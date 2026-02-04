@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PortfolioApi.Application.Dtos;
 using PortfolioApi.Application.UseCases.Technologies;
@@ -30,6 +31,7 @@ namespace PortfolioApi.WebApi.Controllers
         }
 
         [HttpGet("GetAll")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Technology>>> GetAll()
         {
             var techs = await _getAllTechnologiesUseCase.ExecuteAsync();
@@ -37,6 +39,7 @@ namespace PortfolioApi.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<Technology>> GetById(int id)
         {
             var tech = await _getTechnologyByIdUseCase.ExecuteAsync(id);
@@ -44,6 +47,7 @@ namespace PortfolioApi.WebApi.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<int>> Post([FromBody] CreateTechnologyDto dto)
         {
             var techId = await _addTechnologyUseCase.ExecuteAsync(dto);
@@ -51,6 +55,7 @@ namespace PortfolioApi.WebApi.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<ActionResult<int>> Update([FromBody] UpdateTechnologyDto dto, int id)
         {
             var updatedId = await _updateTechnologyUseCase.ExecuteAsync(id, dto);
@@ -58,6 +63,7 @@ namespace PortfolioApi.WebApi.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<ActionResult<bool>> Delete(int id)
         {
             var deleted = await _deleteTechnologyUseCase.ExecuteAsync(id);

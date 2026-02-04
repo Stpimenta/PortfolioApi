@@ -5,7 +5,6 @@ using PortfolioApi.Application.UseCases.Users;
 using PortfolioApi.Infrastructure.Data;
 using PortfolioApi.Infrastructure.Repository.Implementations;
 using PortfolioApi.Infrastructure.Repository.Interfaces;
-using AutoMapper;
 using Microsoft.IdentityModel.Tokens;
 using PortfolioApi.Application.Services;
 using PortfolioApi.WebApi.Middlewares;
@@ -16,7 +15,7 @@ using PortfolioApi.Application.UseCases.Roles;
 using PortfolioApi.Application.UseCases.Technologies;
 using PortfolioApi.Application.UseCases.UserRoleProgress;
 using PortfolioApi.Application.UseCases.UserTechnologyProgress;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -166,6 +165,41 @@ builder.Services.AddSingleton<Amazon.S3.IAmazonS3>(sp =>
 
 
 builder.Services.AddControllers();
+
+
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+
+    // Campo para JWT
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    // Segurança global
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            // Apenas a referência
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
+
+
 var app = builder.Build();
 app.UseCors("AllowFrontend");
 
@@ -182,7 +216,13 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 // Configure the HTTP request pipeline.
 
 app.UseSwagger();
-app.UseSwaggerUI();
+
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Portfolio API v1");
+
+  
+});
 
 app.MapControllers();
 

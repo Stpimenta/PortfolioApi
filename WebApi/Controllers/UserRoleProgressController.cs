@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PortfolioApi.Application.Dtos;
 using PortfolioApi.Application.UseCases.UserRoleProgress;
@@ -29,6 +30,7 @@ public class UserRoleProgressController : ControllerBase
 
    
     [HttpGet("user/{userId}")]
+    [AllowAnonymous]
     public async Task<ActionResult<IEnumerable<GetUserRoleProgressDto>>> GetByUser(int userId)
     {
         var progressList = await _getByUserUseCase.ExecuteAsync(userId);
@@ -37,6 +39,7 @@ public class UserRoleProgressController : ControllerBase
 
 
     [HttpPost]
+    [Authorize]
     public async Task<ActionResult> Post([FromBody] CreateUserRoleProgressDto dto)
     {
         await _addUseCase.ExecuteAsync(dto);
@@ -45,6 +48,7 @@ public class UserRoleProgressController : ControllerBase
 
  
     [HttpPut]
+    [Authorize]
     public async Task<ActionResult> Update([FromBody] UpdateUserRoleProgressDto dto)
     {
         await _updateUseCase.ExecuteAsync(dto);
@@ -53,6 +57,7 @@ public class UserRoleProgressController : ControllerBase
 
 
     [HttpDelete("{userId}/{roleId}")]
+    [Authorize]
     public async Task<ActionResult> Delete(int userId, int roleId)
     {
         await _deleteUseCase.ExecuteAsync(userId, roleId);

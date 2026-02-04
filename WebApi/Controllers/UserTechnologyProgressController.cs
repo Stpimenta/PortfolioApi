@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PortfolioApi.Application.Dtos;
 using PortfolioApi.Application.UseCases.UserTechnologyProgress;
@@ -26,6 +27,7 @@ public class UserTechnologyProgressController : ControllerBase
     }
 
     [HttpGet("user/{userId}")]
+    [AllowAnonymous]
     public async Task<ActionResult<IEnumerable<GetUserTechnologyProgressDto>>> GetByUser(int userId)
     {
         var progressList = await _getByUserUseCase.ExecuteAsync(userId);
@@ -33,6 +35,7 @@ public class UserTechnologyProgressController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<ActionResult> Post([FromBody] CreateUserTechnologyProgressDto dto)
     {
         await _addUseCase.ExecuteAsync(dto);
@@ -40,6 +43,7 @@ public class UserTechnologyProgressController : ControllerBase
     }
 
     [HttpPut]
+    [Authorize]
     public async Task<ActionResult> Update([FromBody] UpdateUserTechnologyProgressDto dto)
     {
         await _updateUseCase.ExecuteAsync(dto);
@@ -47,6 +51,7 @@ public class UserTechnologyProgressController : ControllerBase
     }
 
     [HttpDelete("{userId}/{techId}")]
+    [Authorize]
     public async Task<ActionResult> Delete(int userId, int techId)
     {
         await _deleteUseCase.ExecuteAsync(userId, techId);

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PortfolioApi.Application.Dtos;
 using PortfolioApi.Application.UseCases.Projects;
@@ -40,6 +41,7 @@ public class ProjectController : ControllerBase
 
 
     [HttpGet("GetAll")]
+    [AllowAnonymous]
     public async Task<ActionResult<IEnumerable<GetProjectDto>>> GetAll()
     {
         var projects = await _getAllProjectsUseCase.ExecuteAsync();
@@ -47,6 +49,7 @@ public class ProjectController : ControllerBase
     }
     
     [HttpGet("GetByUserId/{userId}")]
+    [AllowAnonymous]
     public async Task<ActionResult<IEnumerable<GetProjectDto>>> GetByUserId(int  userId)
     {
         var projects = await _getProjectByIdUserUseCase.ExecuteAsync(userId);
@@ -54,6 +57,7 @@ public class ProjectController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [AllowAnonymous]
     public async Task<ActionResult<Project>> GetById(int id)
     {
         var project = await _getProjectByIdUseCase.ExecuteAsync(id);
@@ -62,6 +66,7 @@ public class ProjectController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<ActionResult<int>> Create( [FromForm] CreateProjectDto dto)
     {
         var id = await _createProjectUseCase.ExecuteAsync(dto);
@@ -69,6 +74,7 @@ public class ProjectController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize]
     public async Task<ActionResult> Update(int id, [FromForm] UpdateProjectDto dto)
     {
         await _updateProjectUseCase.ExecuteAsync(id, dto);
@@ -76,6 +82,7 @@ public class ProjectController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize]
     public async Task<ActionResult> Delete(int id)
     {
         var success = await _deleteProjectUseCase.ExecuteAsync(id);
@@ -84,6 +91,7 @@ public class ProjectController : ControllerBase
     }
     
     [HttpPost ("/images/{projectId}")]
+    [Authorize]
     public async Task<ActionResult<int>> AddImages ( int projectId, [FromForm] List<IFormFile> images)
     {
         await  _addImageUseCase.ExecuteAsync(projectId, images);
@@ -91,6 +99,7 @@ public class ProjectController : ControllerBase
     }
     
     [HttpDelete("/images/{projectId}/{imageUrl}")]
+    [Authorize]
     public async Task<ActionResult> RemoveImage(int projectId, string imageUrl)
     {
        await  _deleteImageUseCase.ExecuteAsync(projectId, imageUrl);

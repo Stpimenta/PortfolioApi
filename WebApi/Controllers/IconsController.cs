@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PortfolioApi.Application.Dtos;
 using PortfolioApi.Application.UseCases.Icons;
@@ -30,6 +31,7 @@ public class IconsController : ControllerBase
     }
 
     [HttpGet("GetAll")]
+    [AllowAnonymous]
     public async Task<ActionResult<IEnumerable<Icons>>> GetAll()
     {
         var icons = await _getAllIconsUseCase.ExecuteAsync();
@@ -37,6 +39,7 @@ public class IconsController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [AllowAnonymous]
     public async Task<ActionResult<Icons>> GetById(int id)
     {
         var icon = await _getIconByIdUseCase.ExecuteAsync(id);
@@ -44,6 +47,7 @@ public class IconsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<ActionResult<int>> Post([FromForm] CreateIconDto dto)
     {
         var iconId = await _createIconUseCase.ExecuteAsync(dto);
@@ -51,6 +55,7 @@ public class IconsController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize]
     public async Task<ActionResult<int>> Put(int id, [FromForm] UpdateIconDto dto)
     {
         var iconId = await _updateIconUseCase.ExecuteAsync(id, dto);
@@ -58,6 +63,7 @@ public class IconsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize]
     public async Task<ActionResult<bool>> Delete(int id)
     {
         var deleted = await _deleteIconUseCase.ExecuteAsync(id);
