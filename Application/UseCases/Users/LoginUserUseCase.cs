@@ -7,7 +7,7 @@ using PortfolioApi.Shared.Exceptions;
 
 namespace PortfolioApi.Application.UseCases.Users;
 
-public class LoginUserUseCase
+public class  LoginUserUseCase
 {
     private readonly IUserRepository _userRepository;
     private readonly IPasswordService _passwordService;

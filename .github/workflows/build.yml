@@ -38,3 +38,7 @@ jobs:
       - name: Push Docker image to GHCR
         run: |
           docker push $IMAGE_NAME
+          
+      - name: Trigger Portainer Webhook
+        run: |
+          curl -X POST ${{ secrets.PORTAINER_WEBHOOK_URL }}

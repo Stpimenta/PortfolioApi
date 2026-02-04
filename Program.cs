@@ -18,6 +18,12 @@ using PortfolioApi.Application.UseCases.UserTechnologyProgress;
 using Microsoft.OpenApi.Models;
 
 
+using Microsoft.AspNetCore.Identity;
+
+using PortfolioApi.Domain.Entities; // sua entidade User
+
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.WebHost.ConfigureKestrel(options =>
@@ -31,7 +37,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("https://stpimenta.com", "https://www.stpimenta.com", "https://gurdiano.com", "https://www.gurdiano.com", "http://localhost:1212")
+            policy.WithOrigins("https://stpimenta.com", "https://www.stpimenta.com", "https://gurdiano.com", "https://www.gurdiano.com", "https://portadmin.stpimenta.com/", "https://portadmin.gurdiano.com/")
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
@@ -202,6 +208,8 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 app.UseCors("AllowFrontend");
+
+
 
 //migrations
 // using (var scope = app.Services.CreateScope())
